@@ -1,16 +1,14 @@
 // ============ GLOBAL VARIABELS ============ //
-const endpoint =
-  "https://race-dat-v2-default-rtdb.europe-west1.firebasedatabase.app"; // To do: paste url to endpoint DONE
+const endpoint = "http://localhost:3333"; // To do: paste url to endpoint DONE
 let selectedUser;
 
 // ============ READ ============ //
 // Read (GET) all users from Firebase (Database) using REST API
 async function readUsers() {
-  const response = await fetch(`${endpoint}/users.json`);
+  const response = await fetch(`${endpoint}/users`);
   const data = await response.json();
-  const users = Object.keys(data).map((key) => ({ id: key, ...data[key] })); // from object to array
 
-  return users;
+  return data;
 }
 
 // Create HTML and display all users from given list
@@ -56,9 +54,12 @@ async function createUser(event) {
 
   const newUser = { name, title, mail, image };
   const userAsJson = JSON.stringify(newUser);
-  const response = await fetch(`${endpoint}/users.json`, {
+  const response = await fetch(`${endpoint}/users`, {
     method: "POST",
     body: userAsJson,
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
 
   if (response.ok) {
@@ -101,22 +102,24 @@ async function updateUser(event) {
   // update user
   const userToUpdate = { name, title, mail, image }; // To do: add all fields/ variabels
   const userAsJson = JSON.stringify(userToUpdate);
-  const response = await fetch(`${endpoint}/users/${selectedUser.id}.json`, {
+  const response = await fetch(`${endpoint}/users/${selectedUser.id}`, {
     method: "PUT",
     body: userAsJson,
+    headers: {
+      "Content-Type": "application/json",
+    },
   });
   if (response.ok) {
     updateUsersGrid();
     // and scroll to top
     scrollToTop();
-    res;
   }
 }
 
 // ================== DELETE ============ //
 async function deleteUser(id) {
   console.log(id);
-  const response = await fetch(`${endpoint}/users/${id}.json`, {
+  const response = await fetch(`${endpoint}/users/${id}`, {
     method: "DELETE",
   });
   if (response.ok) {
